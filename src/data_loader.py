@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 QUERY = "large language model"
-MAX_DOCS = 2
+MAX_DOCS = 40
 OUTPUT_PATH = "data/arxiv_data"
 
 
