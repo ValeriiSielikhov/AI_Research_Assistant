@@ -1,7 +1,7 @@
 import logging
 
 import faiss
-from langchain.docstore import InMemoryDocstore
+from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -74,7 +74,7 @@ def setup_vector_store(index: faiss.Index, mapping: dict, documents: dict) -> FA
         raise
 
 
-def main():
+def get_vactor_store() -> FAISS:
     try:
         spark = initialize_spark(logger, "Vector Store Setup")
         index = load_faiss_index(FAISS_INDEX_PATH)
@@ -92,4 +92,4 @@ def main():
 
 
 if __name__ == "__main__":
-    vector_store = main()
+    vector_store = get_vactor_store()
