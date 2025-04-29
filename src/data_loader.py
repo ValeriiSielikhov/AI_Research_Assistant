@@ -1,10 +1,11 @@
 import logging
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from langchain_community.document_loaders import ArxivLoader
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, regexp_replace
 
+from utils import initialize_spark
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -15,16 +16,6 @@ logger = logging.getLogger(__name__)
 QUERY = "large language model"
 MAX_DOCS = 2
 OUTPUT_PATH = "data/arxiv_data"
-
-
-def initialize_spark() -> SparkSession:
-    try:
-        spark = SparkSession.builder.appName("ArxivDataLoader").getOrCreate()
-        logger.info("Spark session initialized successfully")
-        return spark
-    except Exception as e:
-        logger.error(f"Failed to initialized Spark session: {e}")
-        raise
 
 
 def save_to_csv(
@@ -75,7 +66,10 @@ def load_arxiv_documents(query: str, max_docs: int) -> list[Any]:
     logger.info(f"Loading up to {max_docs} documents from Arxiv with query: {query}")
     try:
         loader = ArxivLoader(
-            query=query, load_max_docs=max_docs, top_k_results=max_docs
+            query=query,
+            load_max_docs=max_docs,
+            top_k_results=max_docs,
+            load_all_available_meta=True,
         )
         docs = loader.load()
         logger.info(f"Loadede {len(docs)} documents")
@@ -87,7 +81,7 @@ def load_arxiv_documents(query: str, max_docs: int) -> list[Any]:
 
 def main():
     try:
-        spark = initialize_spark()
+        spark = initialize_spark(logger, "ArxivDataLoader")
         docs = load_arxiv_documents(query=QUERY, max_docs=MAX_DOCS)
         data = preprosess_documents(docs)
         save_to_csv(spark, data, OUTPUT_PATH)
@@ -95,7 +89,7 @@ def main():
         logger.error(f"Pipeline failed: {e}")
     finally:
         spark.stop()
-        logger.info("spark session stopped")
+        logger.info("Spark session stopped")
 
 
 if __name__ == "__main__":
