@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "apache-airflow>=3.0.1",
     "arxiv>=2.2.0",
     "dvc>=3.59.1",
     "faiss-cpu>=1.11.0",
