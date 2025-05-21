@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 QUERY = "large language model"
-MAX_DOCS = 40
+MAX_DOCS = 20
 OUTPUT_PATH = "data/arxiv_data"
 
 
@@ -72,7 +72,7 @@ def load_arxiv_documents(query: str, max_docs: int) -> list[Any]:
             load_all_available_meta=True,
         )
         docs = loader.load()
-        logger.info(f"Loadede {len(docs)} documents")
+        logger.info(f"Loaded {len(docs)} documents")
         return docs
     except Exception as e:
         logger.error(f"Failed to load documents: {e}")

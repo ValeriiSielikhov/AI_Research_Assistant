@@ -4,6 +4,7 @@ import os
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import SecretStr
 
 from setup_vector_store import get_vactor_store
 
@@ -23,7 +24,7 @@ def setup_rag_chain(vector_store: FAISS) -> RetrievalQA:
 
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.0-flash",
-            google_api_key=GEMINI_API_KEY,
+            api_key=SecretStr(GEMINI_API_KEY),
             temperature=1.0,
         )
 

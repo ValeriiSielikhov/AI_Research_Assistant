@@ -1,8 +1,9 @@
 import logging
+from typing import Any
 
 import faiss
-from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain.docstore.document import Document
+from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from pyspark.sql import SparkSession
@@ -29,7 +30,7 @@ def load_faiss_index(index_path: str) -> faiss.Index:
 
 def load_documents_and_mapping(
     spark: SparkSession, mapping_path: str, data_path: str
-) -> dict:
+) -> tuple[dict[Any, Any], dict[Any, Document]]:
     logger.info(f"Loading mapping from {mapping_path}")
     try:
         df_mapping = spark.read.parquet(mapping_path)
@@ -50,7 +51,7 @@ def load_documents_and_mapping(
             for row in rows
         }
         logger.info(f"Loaded mapping for {len(mapping)} docs")
-        return mapping, documents
+        return (mapping, documents)
     except Exception as e:
         logger.error(f"Failed loading map: {e}")
         raise
