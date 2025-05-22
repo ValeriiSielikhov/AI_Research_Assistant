@@ -4,6 +4,7 @@ import os
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langsmith import utils
 from pydantic import SecretStr
 
 from setup_vector_store import get_vactor_store
@@ -13,7 +14,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_PROJECT"] = "AI_Research_Assistant"
+os.environ["LANGCHAIN_API_KEY"] = os.environ.get("LANGCHAIN_API_KEY", "")
 
 
 def setup_rag_chain(vector_store: FAISS) -> RetrievalQA:
@@ -52,4 +56,8 @@ def get_qa_chain():
 
 
 if __name__ == "__main__":
-    qa_chain = get_qa_chain()
+    if utils.tracing_is_enabled():
+        qa_chain = get_qa_chain()
+    else:
+        logger.error("Tracing is not enabled. Please set the environment variables.")
+        raise ValueError("Tracing is not enabled.")
